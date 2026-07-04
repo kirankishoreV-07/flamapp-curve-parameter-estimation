@@ -19,7 +19,6 @@ def inv_loss(p):
     if not -0.05 < M < 0.05:
         return 1e9
     return np.mean(abs(A[ok]-np.exp(M*t[ok])*s[ok]))
-
 init=differential_evolution(inv_loss,[(0,50),(0,100)],seed=42,tol=1e-12,maxiter=500)
 theta0,X0=init.x
 r0=np.radians(theta0)
@@ -49,4 +48,17 @@ def l1(p):
         + abs(ye-yp)
     )
 
+result = differential_evolution(
+    l1,
+    [(0, 50),(-0.05, 0.05),(0, 100)],
+    seed=42,
+    tol=1e-10,
+    maxiter=500
+)
+theta,M,X=result.x
+print("theta=",theta)
+print("M=",M)
+print("X=",X)
+print("total uniform L1 =",result.fun)
+print("mean uniform L1 =",result.fun / len(tu))
 
