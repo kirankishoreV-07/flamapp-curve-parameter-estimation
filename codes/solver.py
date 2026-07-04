@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
 from scipy.optimize import differential_evolution
+from scipy.interpolate import PchipInterpolator
 
-df = pd.read_csv("data/xy_data.csv")
-x,y = df["x"].values,df["y"].values
+df=pd.read_csv("data/xy_data.csv")
+x,y=df["x"].values,df["y"].values
 def inv_loss(p):
     theta,X=p
     r=np.radians(theta)
@@ -24,3 +25,17 @@ theta0,X0=init.x
 r0=np.radians(theta0)
 t_raw=(x-X0)*np.cos(r0)+(y-42)*np.sin(r0)
 print("recovered t range:",t_raw.min(),"to",t_raw.max())
+
+order=np.argsort(t_raw)
+ts=t_raw[order]
+xs=x[order]
+ys=y[order]
+ts,idx=np.unique(ts,return_index=True)
+xs=xs[idx]
+ys=ys[idx]
+tu=np.linspace(6,60,1502)[1:-1]
+xe=PchipInterpolator(ts,xs,extrapolate=True)(tu)
+ye=PchipInterpolator(ts,ys,extrapolate=True)(tu)
+
+print("uniform samples:",len(tu))
+
