@@ -6,42 +6,38 @@ This repository contains my solution to the parametric curve parameter estimatio
 
 The objective is to recover the unknown parameters \(\theta\), \(M\), and \(X\) from a supplied set of \((x,y)\) coordinates generated from the curve
 
-$$
+
+```math
 \begin{aligned}
-x(t) &= t\cos\theta
-- e^{M|t|}\sin(0.3t)\sin\theta
-+ X, \\[4pt]
-y(t) &= 42
-+ t\sin\theta
-+ e^{M|t|}\sin(0.3t)\cos\theta.
+x(t) &= t\cos\theta - e^{M|t|}\sin(0.3t)\sin\theta + X, \\
+y(t) &= 42 + t\sin\theta + e^{M|t|}\sin(0.3t)\cos\theta.
 \end{aligned}
-$$
+```
 
 The unknown parameters satisfy
 
-$$
+```math
 0^\circ < \theta < 50^\circ,
 \qquad
 -0.05 < M < 0.05,
 \qquad
 0 < X < 100,
-$$
 
 with
 
-$$
+```math
 6 < t < 60.
-$$
+```
 
 The final recovered values are
 
-$$
+```math
 \boxed{
 \theta = 30^\circ,\qquad
 M = 0.03,\qquad
 X = 55
 }
-$$
+```
 
 ---
 
