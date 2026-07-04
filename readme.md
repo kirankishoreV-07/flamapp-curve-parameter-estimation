@@ -4,8 +4,7 @@
 
 This repository contains my solution to the parametric curve parameter estimation problem.
 
-The objective is to recover the unknown parameters \(\theta\), \(M\), and \(X\) from a supplied set of \((x,y)\) coordinates generated from the curve
-
+The objective is to recover the unknown parameters $\theta$, $M$, and $X$ from a supplied set of $(x,y)$ coordinates generated from the curve:
 
 ```math
 \begin{aligned}
@@ -14,22 +13,23 @@ y(t) &= 42 + t\sin\theta + e^{M|t|}\sin(0.3t)\cos\theta.
 \end{aligned}
 ```
 
-The unknown parameters satisfy
+The unknown parameters satisfy:
 
 ```math
 0^\circ < \theta < 50^\circ,
 \qquad
 -0.05 < M < 0.05,
 \qquad
-0 < X < 100,
-
-with
-
-```math
-6 < t < 60.
+0 < X < 100
 ```
 
-The final recovered values are
+with:
+
+```math
+6 < t < 60
+```
+
+The final recovered values are:
 
 ```math
 \boxed{
@@ -43,27 +43,27 @@ X = 55
 
 ## Understanding the Problem
 
-The provided CSV contains 1,500 observed \((x,y)\) points lying on the curve.
+The provided CSV contains 1,500 observed $(x,y)$ points lying on the curve.
 
-However, the corresponding value of \(t\) for each coordinate is not provided.
+However, the corresponding parameter value $t$ for each coordinate is not provided.
 
 This creates the main difficulty in the problem.
 
-The equations describe
+The mathematical model describes:
 
-$$
-x(t),\qquad y(t),
-$$
+```math
+x(t),\qquad y(t)
+```
 
-but the dataset only provides
+while the dataset only provides:
 
-$$
-(x_i,y_i).
-$$
+```math
+(x_i,y_i)
+```
 
 Therefore, the CSV rows cannot directly be matched with uniformly generated curve points.
 
-Before fitting \(\theta\), \(M\), and \(X\), I first needed to understand the geometry of the curve and recover its missing parametric ordering.
+Before estimating $\theta$, $M$, and $X$, I first needed to understand the geometry of the curve and recover its missing parametric ordering.
 
 ---
 
@@ -71,62 +71,62 @@ Before fitting \(\theta\), \(M\), and \(X\), I first needed to understand the ge
 
 I began by inspecting the CSV and visualizing the supplied coordinates.
 
-The \(x\)-\(y\) scatter plot showed a smooth nonlinear curve with a visible oscillatory structure.
+The $x$-$y$ scatter plot showed a smooth nonlinear curve with a visible oscillatory structure.
 
-I then varied each parameter independently to understand how it affects the curve.
+I then varied each parameter independently to understand its influence on the curve.
 
 | Parameter | Observed Effect |
 |---|---|
-| \(\theta\) | Changes the overall orientation of the curve |
-| \(M\) | Controls the growth or decay of the oscillation amplitude |
-| \(X\) | Translates the curve horizontally |
-| \(t\) | Represents progression along the parametric curve |
+| $\theta$ | Changes the overall orientation of the curve |
+| $M$ | Controls the growth or decay of the oscillation amplitude |
+| $X$ | Translates the curve horizontally |
+| $t$ | Represents progression along the parametric curve |
 
-### Effect of \(\theta\)
+### Effect of $\theta$
 
-Changing \(\theta\) rotates the overall direction of the curve.
+Changing $\theta$ changes the overall orientation of the curve.
 
-This behaviour is visible from the repeated \(\sin\theta\) and \(\cos\theta\) terms in both coordinate equations.
+This behaviour is consistent with the repeated $\sin\theta$ and $\cos\theta$ terms in both coordinate equations.
 
-### Effect of \(M\)
+### Effect of $M$
 
-The parameter \(M\) appears in
+The parameter $M$ appears in:
 
-$$
-e^{M|t|}.
-$$
+```math
+e^{M|t|}
+```
 
-It controls the amplitude envelope of the sinusoidal component.
+It controls the amplitude envelope of the oscillatory component.
 
-Positive values of \(M\) increase the oscillation amplitude as \(t\) increases, while negative values produce a decaying oscillation.
+Positive values of $M$ increase the oscillation amplitude as $t$ increases, while negative values produce a decaying oscillation.
 
-### Effect of \(X\)
+### Effect of $X$
 
-The parameter \(X\) is added only to the \(x\)-coordinate.
+The parameter $X$ is added only to the $x$-coordinate.
 
-Therefore, changing \(X\) shifts the entire curve horizontally without altering its intrinsic shape.
+Therefore, changing $X$ shifts the complete curve horizontally without altering its intrinsic shape.
 
 ### Oscillatory Behaviour
 
-The term
+I also studied:
 
-$$
+```math
 \sin(0.3t)
-$$
+```
 
-was also studied over the given \(t\)-range.
+over the specified $t$-range.
 
-Its repeating behaviour explains the visible oscillations around the main direction of the observed curve.
+Its repeating behaviour explains the oscillatory structure visible around the main direction of the observed curve.
 
-The exploratory analysis suggested an important structural observation: the \(\sin\theta\) and \(\cos\theta\) terms follow the form of a two-dimensional rotation.
+The exploratory analysis suggested an important mathematical observation: the $\sin\theta$ and $\cos\theta$ terms follow the structure of a two-dimensional rotation.
 
-This became the basis of the final solution.
+This observation became the basis of the final methodology.
 
 ---
 
 # Methodology
 
-The final methodology consists of four main stages:
+The solution follows four main stages:
 
 ```text
 1. Inverse Transformation
@@ -139,34 +139,31 @@ The final methodology consists of four main stages:
    → Search θ, M, and X
 
 4. Uniform L1 Loss
-   → Evaluate each candidate and guide the optimizer
+   → Evaluate candidates and guide the optimizer
 ```
 
 ---
 
-## 1. Inverse Transformation — Recovering the Missing \(t\)
+## 1. Inverse Transformation — Recovering the Missing $t$
 
-The repeated oscillatory component is written as
+The repeated oscillatory component is represented as:
 
-$$
-A=e^{M|t|}\sin(0.3t).
-$$
+```math
+A=e^{M|t|}\sin(0.3t)
+```
 
-The original curve equations can then be simplified to
+The original equations can then be rewritten as:
 
-$$
-x-X=t\cos\theta-A\sin\theta
-$$
-
-and
-
-$$
-y-42=t\sin\theta+A\cos\theta.
-$$
+```math
+\begin{aligned}
+x-X &= t\cos\theta-A\sin\theta, \\
+y-42 &= t\sin\theta+A\cos\theta.
+\end{aligned}
+```
 
 These equations have the standard structure of a two-dimensional rotation:
 
-$$
+```math
 \begin{bmatrix}
 x-X \\
 y-42
@@ -179,90 +176,78 @@ y-42
 \begin{bmatrix}
 t \\
 A
-\end{bmatrix}.
-$$
+\end{bmatrix}
+```
 
-In other words, the hidden coordinates
+In other words, the hidden coordinates $(t,A)$ are rotated by $\theta$ to produce the observed shifted coordinates $(x-X,y-42)$.
 
-$$
-(t,A)
-$$
+Applying the inverse rotation gives:
 
-are rotated by \(\theta\) to produce the observed shifted coordinates
-
-$$
-(x-X,y-42).
-$$
-
-Applying the inverse rotation gives
-
-$$
+```math
 \boxed{
 t=(x-X)\cos\theta+(y-42)\sin\theta
 }
-$$
+```
 
-and
+and:
 
-$$
+```math
 \boxed{
-A=-(x-X)\sin\theta+(y-42)\cos\theta.
+A=-(x-X)\sin\theta+(y-42)\cos\theta
 }
-$$
+```
 
-These equations allow candidate values of \(\theta\) and \(X\) to map every observed \((x,y)\) point back to candidate \((t,A)\) coordinates.
+For candidate values of $\theta$ and $X$, these equations map every observed $(x,y)$ point back to candidate $(t,A)$ coordinates.
 
-Since the given range satisfies \(t>0\),
+Since the specified domain satisfies $t>0$:
 
-$$
-|t|=t,
-$$
+```math
+|t|=t
+```
 
-and therefore
+Therefore:
 
-$$
-A=e^{Mt}\sin(0.3t).
-$$
+```math
+A=e^{Mt}\sin(0.3t)
+```
 
-Rearranging,
+Rearranging:
 
-$$
-\frac{A}{\sin(0.3t)}=e^{Mt}.
-$$
+```math
+\frac{A}{\sin(0.3t)}=e^{Mt}
+```
 
-Taking the natural logarithm gives
+Taking the natural logarithm gives:
 
-$$
+```math
 \ln\left(
 \frac{A}{\sin(0.3t)}
-\right)=Mt.
-$$
+\right)=Mt
+```
 
 This provides a mathematical consistency condition for the inverse transformation.
 
-For candidate \(\theta\) and \(X\), the recovered \(t\) and \(A\) values should follow this exponential-sinusoidal relationship.
+For suitable values of $\theta$ and $X$, the recovered $t$ and $A$ values should follow this exponential-sinusoidal relationship.
 
-A preliminary bounded search is used to identify a consistent inverse transformation and recover an approximate \(t\)-value for every CSV point.
+A preliminary bounded search is used to identify a consistent inverse transformation and estimate an approximate $t$-value for every CSV point.
 
-The recovered values are then used to restore the missing parametric order of the curve.
+The recovered $t$-values are then used to restore the missing parametric order of the curve.
 
 ---
 
 ## 2. PCHIP Interpolation — Reconstructing a Uniform Reference Curve
 
-After recovering approximate \(t\)-values, the observed points are sorted in increasing order of \(t\).
+After recovering approximate $t$-values, the observed points are sorted in increasing order of $t$.
 
-The ordered samples can now be interpreted as observations of
+The ordered samples can now be interpreted as observations of:
 
-$$
-x(t)
-\qquad\text{and}\qquad
-y(t).
-$$
+```math
+x(t)\qquad\text{and}\qquad y(t)
+```
 
-However, the recovered \(t\)-values are not uniformly spaced.
+However, the recovered $t$-values are not uniformly spaced.
 
-To evaluate the reference curve at uniform parameter positions, I use PCHIP interpolation independently for \(x(t)\) and \(y(t)\).
+To evaluate the reference curve at uniform parameter positions, I use PCHIP interpolation independently for $x(t)$ and $y(t)$.
 
 ```python
 xe = PchipInterpolator(ts, xs, extrapolate=True)(tu)
@@ -271,7 +256,7 @@ ye = PchipInterpolator(ts, ys, extrapolate=True)(tu)
 
 PCHIP provides a shape-preserving interpolation of the ordered curve samples.
 
-A grid of exactly 1,500 uniformly spaced \(t\)-values is created strictly inside the specified domain:
+A grid of exactly 1,500 uniformly spaced $t$-values is created strictly inside the specified domain:
 
 ```python
 tu = np.linspace(6, 60, 1502)[1:-1]
@@ -279,47 +264,37 @@ tu = np.linspace(6, 60, 1502)[1:-1]
 
 The interpolated reference curve is evaluated on these values.
 
-Therefore,
+Therefore:
 
-$$
+```math
 (x_{e,i},y_{e,i})
-$$
+```
 
-represents the reconstructed reference curve at the uniform parameter position \(t_i\).
+represents the reconstructed reference curve at uniform parameter position $t_i$.
 
 This stage converts the original unordered coordinate data into a uniformly sampled, parameter-aligned reference curve.
 
 ---
 
-## 3. Differential Evolution — Searching \(\theta\), \(M\), and \(X\)
+## 3. Differential Evolution — Searching $\theta$, $M$, and $X$
 
-The next step is to search the complete allowed parameter space:
+The next step is to search the allowed parameter space:
 
-$$
+```math
 0^\circ < \theta < 50^\circ,
-$$
-
-$$
+\qquad
 -0.05 < M < 0.05,
-$$
-
-$$
-0 < X < 100.
-$$
+\qquad
+0 < X < 100
+```
 
 I use Differential Evolution as the bounded optimizer.
 
-For every candidate
+For every candidate $(\theta,M,X)$, the original parametric equation is evaluated at the same uniform $t$-values used for the reconstructed reference curve.
 
-$$
-(\theta,M,X),
-$$
+The predicted curve is therefore:
 
-the original parametric equation is evaluated at the same uniform \(t\)-values used for the reconstructed reference curve.
-
-The predicted curve is therefore
-
-$$
+```math
 \begin{aligned}
 x_{p,i}
 &=
@@ -329,21 +304,22 @@ e^{M|t_i|}
 \sin(0.3t_i)
 \sin\theta
 +
-X, \\[4pt]
+X, \\
 y_{p,i}
 &=
-42+
+42
++
 t_i\sin\theta
 +
 e^{M|t_i|}
 \sin(0.3t_i)
 \cos\theta.
 \end{aligned}
-$$
+```
 
 The optimizer repeatedly generates candidate parameter sets and evaluates how closely their predicted curves match the reconstructed reference curve.
 
-The final parameter search is implemented as
+The final parameter search is implemented as:
 
 ```python
 result = differential_evolution(
@@ -357,35 +333,34 @@ result = differential_evolution(
 
 A fixed random seed is used to make the optimization reproducible.
 
-Differential Evolution performs the parameter search, while the L1 objective determines which candidate is better.
+Differential Evolution performs the parameter search, while the L1 objective determines which candidate provides the better curve fit.
 
 ---
 
 ## 4. Uniform L1 Loss — Guiding the Optimizer
 
-Both the reconstructed reference curve and candidate predicted curve are evaluated at the exact same uniform \(t\)-values.
+Both the reconstructed reference curve and the candidate predicted curve are evaluated at the exact same uniform $t$-values.
 
-Therefore, each reference point has a direct corresponding predicted point:
+Therefore, every reference point has a directly corresponding predicted point:
 
-$$
+```math
 (x_{e,i},y_{e,i})
 \longleftrightarrow
-(x_{p,i},y_{p,i}).
-$$
+(x_{p,i},y_{p,i})
+```
 
-The coordinate-wise L1 distance for one corresponding pair is
+The coordinate-wise L1 distance for one corresponding point pair is:
 
-$$
+```math
 d_i=
 |x_{e,i}-x_{p,i}|
 +
-|y_{e,i}-y_{p,i}|.
-$$
+|y_{e,i}-y_{p,i}|
+```
 
-The total objective is
+The total objective is:
 
-$$
-\boxed{
+```math
 L_1(\theta,M,X)
 =
 \sum_{i=1}^{1500}
@@ -394,8 +369,7 @@ L_1(\theta,M,X)
 +
 |y_{e,i}-y_{p,i}|
 \right)
-}
-$$
+```
 
 In code:
 
@@ -405,7 +379,7 @@ return np.sum(abs(xe - xp) + abs(ye - yp))
 
 A smaller L1 value represents a closer curve fit.
 
-The optimization process can therefore be summarized as
+The optimization process can be summarized as:
 
 ```text
 Candidate (θ, M, X)
@@ -421,7 +395,7 @@ Lower L1 = better candidate
 Differential Evolution continues searching
 ```
 
-The L1 loss is the fitness objective that guides Differential Evolution toward the best-fitting values of \(\theta\), \(M\), and \(X\).
+The L1 loss acts as the fitness objective that guides Differential Evolution toward the best-fitting values of $\theta$, $M$, and $X$.
 
 ---
 
@@ -447,43 +421,43 @@ Uniform L1 Evaluation
 Best θ, M, X
 ```
 
-The key idea is to first convert the unordered \((x,y)\) dataset into a parameter-aligned reference curve.
+The key idea is to first convert the unordered $(x,y)$ dataset into a parameter-aligned reference curve.
 
-Once both curves are evaluated at identical uniform \(t\)-values, the unknown parameters can be optimized directly using coordinate-wise L1 distance.
+Once the reference and predicted curves are evaluated at identical uniform $t$-values, the unknown parameters can be optimized directly using coordinate-wise L1 distance.
 
 ---
 
 # Results
 
-The optimization produced
+The optimization produced:
 
 | Parameter | Estimated Value | Rounded Value |
 |---|---:|---:|
-| \(\theta\) | \(29.9999726588^\circ\) | \(30^\circ\) |
-| \(M\) | \(0.0299999327\) | \(0.03\) |
-| \(X\) | \(54.9999985658\) | \(55\) |
+| $\theta$ | $29.9999726588^\circ$ | $30^\circ$ |
+| $M$ | $0.0299999327$ | $0.03$ |
+| $X$ | $54.9999985658$ | $55$ |
 
-Therefore, the final recovered parameters are
+Therefore, the final recovered parameters are:
 
-$$
+```math
 \boxed{
 \theta=30^\circ,\qquad
 M=0.03,\qquad
 X=55
 }
-$$
+```
 
-The local uniform-grid comparison produced
+The local uniform-grid comparison produced:
 
-$$
+```math
 \text{Total L1}=0.0933196112
-$$
+```
 
-and
+and:
 
-$$
-\text{Mean L1}=6.2213\times10^{-5}.
-$$
+```math
+\text{Mean L1}=6.2213\times10^{-5}
+```
 
 The total L1 is the accumulated coordinate-wise distance across all 1,500 uniformly sampled point pairs.
 
@@ -507,16 +481,15 @@ The two curves overlap closely across the sampled parameter domain, which is con
 
 # Final Parametric Equation
 
-The rounded angle is
+The rounded angle is:
 
-$$
-30^\circ=\frac{\pi}{6}\approx0.5235987756.
-$$
+```math
+30^\circ=\frac{\pi}{6}\approx0.5235987756
+```
 
-Substituting the recovered parameters into the original equation gives
+Substituting the recovered parameters into the original equation gives:
 
-$$
-\boxed{
+```math
 \begin{aligned}
 x(t)
 &=
@@ -526,24 +499,24 @@ e^{0.03|t|}
 \sin(0.3t)
 \sin(0.5235987756)
 +
-55, \\[4pt]
+55, \\
 y(t)
 &=
-42+
+42
++
 t\sin(0.5235987756)
 +
 e^{0.03|t|}
 \sin(0.3t)
 \cos(0.5235987756).
 \end{aligned}
-}
-$$
+```
 
-for
+for:
 
-$$
-6<t<60.
-$$
+```math
+6<t<60
+```
 
 ### LaTeX / Desmos Format
 
@@ -584,7 +557,7 @@ FLAM_APP/
 
 - `codes/csv_explore.py` — inspection and visualization of the supplied coordinate data.
 - `codes/curve_generator.py` — implementation of the provided parametric curve.
-- `codes/parameter_analyse/` — individual study of the behaviour of \(\theta\), \(M\), \(X\), and \(t\).
+- `codes/parameter_analyse/` — individual study of the behaviour of $\theta$, $M$, $X$, and $t$.
 - `codes/solver.py` — inverse transformation, PCHIP reconstruction, uniform L1 objective, and Differential Evolution search.
 - `codes/comparison.py` — final reference-versus-predicted curve visualization.
 
@@ -622,7 +595,7 @@ mean uniform L1 = 6.221307411541943e-05
 python3 codes/comparison.py
 ```
 
-The generated visualization is saved as
+The generated visualization is saved as:
 
 ```text
 plots/final_curve_comparison.png
@@ -632,20 +605,20 @@ plots/final_curve_comparison.png
 
 ## Conclusion
 
-The main challenge in this problem was not only estimating \(\theta\), \(M\), and \(X\), but handling the missing \(t\)-parameterization of the supplied coordinate data.
+The main challenge in this problem was not only estimating $\theta$, $M$, and $X$, but also handling the missing $t$-parameterization of the supplied coordinate data.
 
-The rotational structure of the equation was inverted to recover approximate \(t\)-values and restore the curve order.
+The rotational structure of the equation was inverted to recover approximate $t$-values and restore the curve order.
 
 PCHIP interpolation was then used to reconstruct a uniformly sampled reference curve.
 
-Differential Evolution searched the permitted parameter space, while coordinate-wise uniform L1 distance evaluated and guided each candidate solution.
+Differential Evolution searched the permitted parameter space, while the coordinate-wise uniform L1 distance evaluated and guided each candidate solution.
 
-The final recovered values are
+The final recovered values are:
 
-$$
+```math
 \boxed{
 \theta=30^\circ,\qquad
 M=0.03,\qquad
 X=55
 }
-$$
+```
