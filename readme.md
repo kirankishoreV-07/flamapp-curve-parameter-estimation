@@ -4,7 +4,11 @@
 
 A short walkthrough covering the initial curve exploration, inverse transformation, recovery of the missing parameterization, uniform L1 curve fitting, and final estimated parameters.
 
-### [▶ Watch the Solution Walkthrough](demo/solution_walkthrough.mp4)
+[![Watch the Solution Walkthrough](plots/final_curve_comparison.png)](https://github.com/user-attachments/assets/62c7fcb2-aa76-4c35-8271-53728397790b)
+
+<p align="center">
+  <b>▶ Click the preview above to watch the solution walkthrough</b>
+</p>
 
 ---
 
