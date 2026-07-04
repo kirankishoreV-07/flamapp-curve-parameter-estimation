@@ -36,6 +36,17 @@ ys=ys[idx]
 tu=np.linspace(6,60,1502)[1:-1]
 xe=PchipInterpolator(ts,xs,extrapolate=True)(tu)
 ye=PchipInterpolator(ts,ys,extrapolate=True)(tu)
-
 print("uniform samples:",len(tu))
+
+def l1(p):
+    theta,M,X=p
+    r=np.radians(theta)
+    A=np.exp(M*np.abs(tu))*np.sin(0.3*tu)
+    xp=tu*np.cos(r)-A*np.sin(r)+X
+    yp=42+tu*np.sin(r)+A*np.cos(r)
+    return np.sum(
+        abs(xe-xp)
+        + abs(ye-yp)
+    )
+
 
