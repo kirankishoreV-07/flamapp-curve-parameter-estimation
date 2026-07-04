@@ -1,5 +1,15 @@
 # Parametric Curve Parameter Estimation
 
+## 🎥 Solution Walkthrough
+
+A short walkthrough covering the initial curve exploration, inverse transformation, recovery of the missing parameterization, uniform L1 curve fitting, and final estimated parameters.
+
+### [▶ Watch the Solution Walkthrough](demo/solution_walkthrough.mp4)
+
+---
+
+## Overview
+
 ## Overview
 
 This repository contains my solution to the parametric curve parameter estimation problem.
