@@ -536,11 +536,11 @@ for:
 \left(t*\cos(0.5236)-e^{0.03\left|t\right|}\cdot\sin(0.3t)\sin(0.5236)+55,\;42+t*\sin(0.5236)+e^{0.03\left|t\right|}\cdot\sin(0.3t)\cos(0.5236)\right)
 ```
 
+```markdown
 **Domain:**
 
 ```text
-6 \le t \le 60
-```
+6 < t < 60
 
 ## Project Structure
 
@@ -611,11 +611,10 @@ The generated visualization is saved as:
 ```text
 plots/final_curve_comparison.png
 ```
-
 ---
 ## Related Research
 
-The methodology is supported by prior work in curve parameterization, interpolation, and continuous optimization.
+Related work was reviewed for curve parameterization, shape-preserving interpolation, and continuous optimization.
 
 - **Roslan & Yahya (2016)** — *Parameterization method on cubic Bézier curve fitting using differential evolution.*  
   [View paper](https://pubs.aip.org/aip/acp/article/1775/1/030075/1020622/Parameterization-method-on-cubic-Bezier-curve)
@@ -626,7 +625,7 @@ The methodology is supported by prior work in curve parameterization, interpolat
 - **Storn & Price (1997)** — *Differential Evolution – A Simple and Efficient Heuristic for Global Optimization over Continuous Spaces.*  
   [View paper](https://link.springer.com/article/10.1023/A%3A1008202821328)
 
-These works are relevant to the missing- $t$ parameterization, PCHIP reconstruction, and Differential Evolution stages of the solution.
+These works are relevant to parameterization, PCHIP reconstruction, and Differential Evolution respectively. The inverse rotational recovery used in this solution is derived directly from the structure of the supplied parametric equation.
 
 ## Conclusion
 
