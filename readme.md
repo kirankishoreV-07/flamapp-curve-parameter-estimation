@@ -263,7 +263,7 @@ xe = PchipInterpolator(ts, xs, extrapolate=True)(tu)
 ye = PchipInterpolator(ts, ys, extrapolate=True)(tu)
 ```
 
-PCHIP provides a shape-preserving interpolation of the ordered curve samples.
+PCHIP provides a shape-preserving interpolation of the ordered curve samples (Fritsch & Carlson, 1980).
 
 A grid of exactly 1,500 uniformly spaced $t$-values is created strictly inside the specified domain:
 
@@ -536,11 +536,13 @@ for:
 \left(t*\cos(0.5236)-e^{0.03\left|t\right|}\cdot\sin(0.3t)\sin(0.5236)+55,\;42+t*\sin(0.5236)+e^{0.03\left|t\right|}\cdot\sin(0.3t)\cos(0.5236)\right)
 ```
 
-```markdown
 **Domain:**
 
 ```text
 6 < t < 60
+```
+
+---
 
 ## Project Structure
 
