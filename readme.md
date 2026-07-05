@@ -14,8 +14,6 @@ A brief walkthrough of the first curve exploration, inverse transformation, reco
 
 ## Overview
 
-## Overview
-
 This repository contains my solution to the parametric curve parameter estimation problem.
 
 The objective is to recover the unknown parameters $\theta$, $M$, and $X$ from a set of $(x,y)$ coordinates generated from the curve:
