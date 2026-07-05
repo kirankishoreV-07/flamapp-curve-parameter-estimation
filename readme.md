@@ -2,7 +2,7 @@
 
 ## 🎥 Solution Walkthrough
 
-A short walkthrough covering the initial curve exploration, inverse transformation, recovery of the missing parameterization, uniform L1 curve fitting, and final estimated parameters.
+A brief walkthrough of the first curve exploration, inverse transformation, recovering the missing parameterization, uniform L1 curve fitting and final estimated parameters.
 
 [![Watch the Solution Walkthrough](plots/final_curve_comparison.png)](https://github.com/user-attachments/assets/62c7fcb2-aa76-4c35-8271-53728397790b)
 
@@ -18,7 +18,7 @@ A short walkthrough covering the initial curve exploration, inverse transformati
 
 This repository contains my solution to the parametric curve parameter estimation problem.
 
-The objective is to recover the unknown parameters $\theta$, $M$, and $X$ from a supplied set of $(x,y)$ coordinates generated from the curve:
+The objective is to recover the unknown parameters $\theta$, $M$, and $X$ from a set of $(x,y)$ coordinates generated from the curve:
 
 ```math
 \begin{aligned}
@@ -57,13 +57,13 @@ X = 55
 
 ## Understanding the Problem
 
-The provided CSV contains 1,500 observed $(x,y)$ points lying on the curve.
+A list of 1500 exact points $(x,y)$ that are observed and lie on the curve is given in the provided csv file.
 
-However, the corresponding parameter value $t$ for each coordinate is not provided.
+But the set of values of the parameter $t$ corresponding to each coordinate is not given.
 
-This creates the main difficulty in the problem.
+This is the first and foremost difficulty in the problem.
 
-The mathematical model describes:
+The mathematical model represents:
 
 ```math
 x(t),\qquad y(t)
@@ -75,20 +75,19 @@ while the dataset only provides:
 (x_i,y_i)
 ```
 
-Therefore, the CSV rows cannot directly be matched with uniformly generated curve points.
+This means that the rows of the CSV file cannot be matched directly with the curve points generated uniformly.
 
-Before estimating $\theta$, $M$, and $X$, I first needed to understand the geometry of the curve and recover its missing parametric ordering.
+To solve for the values of $\theta, M, and X$ I had to understand the geometric properties of the curve and determine the missing order of parameters.
 
 ---
 
 ## Exploratory Analysis
 
-I began by inspecting the CSV and visualizing the supplied coordinates.
+So I started by looking at the CSV and plotting the provided coordinates.
 
-The $x$-$y$ scatter plot showed a smooth nonlinear curve with a visible oscillatory structure.
+A smooth, nonlinear curve was visible on the $x$-$y$ scatter plot, and it appeared to have an oscillatory pattern.
 
-I then varied each parameter independently to understand its influence on the curve.
-
+I then lowered each parameter one at a time, to see how it affected the curve.
 | Parameter | Observed Effect |
 |---|---|
 | $\theta$ | Changes the overall orientation of the curve |
@@ -98,27 +97,27 @@ I then varied each parameter independently to understand its influence on the cu
 
 ### Effect of $\theta$
 
-Changing $\theta$ changes the overall orientation of the curve.
+The orientation of the curve changes with $\theta$.
 
-This behaviour is consistent with the repeated $\sin\theta$ and $\cos\theta$ terms in both coordinate equations.
+This behaviour is in accord with the repeated terms of sin$\theta$ and cos$\theta$ in both coordinates.
 
 ### Effect of $M$
 
-The parameter $M$ appears in:
+The parameter $M$ is used in:
 
 ```math
 e^{M|t|}
 ```
 
-It controls the amplitude envelope of the oscillatory component.
+It regulates the envelope of the oscillating part.
 
-Positive values of $M$ increase the oscillation amplitude as $t$ increases, while negative values produce a decaying oscillation.
+If $M$ is positive, the amplitude of the oscillation gets larger as $t$ increases; if $M$ is negative, the amplitude decreases as $t$ increases..
 
 ### Effect of $X$
 
-The parameter $X$ is added only to the $x$-coordinate.
+Only the $x$-coordinate is increased by the parameter $X$.
 
-Therefore, changing $X$ shifts the complete curve horizontally without altering its intrinsic shape.
+Thus, if $X$ is changed, the entire curve moves parallel to the X-axis but the shape remains unchanged.
 
 ### Oscillatory Behaviour
 
@@ -128,14 +127,13 @@ I also studied:
 \sin(0.3t)
 ```
 
-over the specified $t$-range.
+Over the given range of $t$.
 
-Its repeating behaviour explains the oscillatory structure visible around the main direction of the observed curve.
+The oscillations that can be seen around the main direction of the curve are due to its repeating behaviour.
 
-The exploratory analysis suggested an important mathematical observation: the $\sin\theta$ and $\cos\theta$ terms follow the structure of a two-dimensional rotation.
+The exploratory analysis pointed to an interesting mathematical fact: the terms of $\sin\theta$ and $\cos\theta$ have the form of a two-dimensional rotation.
 
-This observation became the basis of the final methodology.
-
+This observation was used as the final methodology.
 ---
 
 # Methodology
@@ -239,14 +237,13 @@ Taking the natural logarithm gives:
 \right)=Mt
 ```
 
-This provides a mathematical consistency condition for the inverse transformation.
+This gives a condition of mathematical consistency for the inverse transformation.
 
-For suitable values of $\theta$ and $X$, the recovered $t$ and $A$ values should follow this exponential-sinusoidal relationship.
+The values of t and A obtained should be exponential-sinusoidal for appropriate values of the variables $\theta$ and $X$.
 
-A preliminary bounded search is used to identify a consistent inverse transformation and estimate an approximate $t$-value for every CSV point.
+A simple bounded search allows for finding a consistent inverse transformation and approximating a $t$-value for each CSV point.
 
-The recovered $t$-values are then used to restore the missing parametric order of the curve.
-
+Once the $t$-values are recovered, they are again used to recover the missing order of the curve parameter.
 ---
 
 ## 2. PCHIP Interpolation — Reconstructing a Uniform Reference Curve
@@ -435,9 +432,9 @@ Uniform L1 Evaluation
 Best θ, M, X
 ```
 
-The key idea is to first convert the unordered $(x,y)$ dataset into a parameter-aligned reference curve.
+The essential step is to first transform the unordered $(x,y)$ set of data to a parameter-aligned reference curve.
 
-Once the reference and predicted curves are evaluated at identical uniform $t$-values, the unknown parameters can be optimized directly using coordinate-wise L1 distance.
+After both curves are calculated at the same uniform values of $t$ for both the reference and the predicted curve, the unknowns can be optimized directly in the same way, using the coordinate-wise $L1$ distance.
 
 ---
 
@@ -473,23 +470,22 @@ and:
 \text{Mean L1}=6.2213\times10^{-5}
 ```
 
-The total L1 is the accumulated coordinate-wise distance across all 1,500 uniformly sampled point pairs.
+The total L1 is the sum of all the coordinate-wise distances of the 1,500 point pairs sampled uniformly.
 
-The mean L1 represents the average coordinate-wise L1 difference per sampled point.
+The mean L1 is the average value of the difference L1 measured coordinate-wise at each sampled point.
 
-The L1 values reported here are from the uniform-grid implementation used in this repository.
-
+The L1 values provided here are from the uniform-grid implementation provided in this repository.
 ---
 
 ## Visual Validation
 
 ![Expected vs Predicted Curve](plots/final_curve_comparison.png)
 
-The blue markers represent uniformly sampled reconstructed reference points.
+The blue markers are sampled reference points that have been reconstructed with uniform sampling.
 
-The red line represents the predicted curve generated using the estimated parameters.
+The curve of the red line is the curve predicted, based on the estimated parameters.
 
-The two curves overlap closely across the sampled parameter domain, which is consistent with the low uniform-grid L1 loss.
+The two curves are very similar over the parameter range that was sampled, consistent with a low uniform-grid L1 loss.
 
 ---
 
@@ -532,18 +528,21 @@ for:
 6<t<60
 ```
 
-### LaTeX / Desmos Format
+## Desmos
+
+**Link:** [https://www.desmos.com/calculator/vrdreavr1c](https://www.desmos.com/calculator/vrdreavr1c)
+
+**Equation:**
 
 ```text
-\left(
-t\cos(0.5235987756)
--e^{0.03\left|t\right|}\sin(0.3t)\sin(0.5235987756)+55,
-42+t\sin(0.5235987756)
-+e^{0.03\left|t\right|}\sin(0.3t)\cos(0.5235987756)
-\right)
+\left(t*\cos(0.5236)-e^{0.03\left|t\right|}\cdot\sin(0.3t)\sin(0.5236)+55,\;42+t*\sin(0.5236)+e^{0.03\left|t\right|}\cdot\sin(0.3t)\cos(0.5236)\right)
 ```
 
----
+**Domain:**
+
+```text
+6 \le t \le 60
+```
 
 ## Project Structure
 
@@ -616,17 +615,30 @@ plots/final_curve_comparison.png
 ```
 
 ---
+## Related Research
+
+The methodology is supported by prior work in curve parameterization, interpolation, and continuous optimization.
+
+- **Roslan & Yahya (2016)** — *Parameterization method on cubic Bézier curve fitting using differential evolution.*  
+  [View paper](https://pubs.aip.org/aip/acp/article/1775/1/030075/1020622/Parameterization-method-on-cubic-Bezier-curve)
+
+- **Fritsch & Carlson (1980)** — *Monotone Piecewise Cubic Interpolation.*  
+  [View paper](https://epubs.siam.org/doi/10.1137/0717021)
+
+- **Storn & Price (1997)** — *Differential Evolution – A Simple and Efficient Heuristic for Global Optimization over Continuous Spaces.*  
+  [View paper](https://link.springer.com/article/10.1023/A%3A1008202821328)
+
+These works are relevant to the missing-$t$ parameterization, PCHIP reconstruction, and Differential Evolution stages of the solution.
 
 ## Conclusion
 
-The main challenge in this problem was not only estimating $\theta$, $M$, and $X$, but also handling the missing $t$-parameterization of the supplied coordinate data.
+The principal difficulty in this problem was the estimation of $\theta$, $M$ and $X$ — and the missing $t$-parameterisation of the given coordinate data.
 
-The rotational structure of the equation was inverted to recover approximate $t$-values and restore the curve order.
+The structure of the equation was switched in the direction of rotation to obtain the $t$-values in the approximation state and to bring the order of the curve back.
 
-PCHIP interpolation was then used to reconstruct a uniformly sampled reference curve.
+The reference curve was then uniformly sampled using PCHIP interpolation.
 
-Differential Evolution searched the permitted parameter space, while the coordinate-wise uniform L1 distance evaluated and guided each candidate solution.
-
+The coordinate-wise uniform L1 distance was evaluated and used to guide the search of the allowed parameter space conducted by Differential Evolution.
 The final recovered values are:
 
 ```math
