@@ -479,11 +479,11 @@ The L1 values provided here are from the uniform-grid implementation provided in
 
 ![Expected vs Predicted Curve](plots/final_curve_comparison.png)
 
-The blue markers are sampled reference points that have been reconstructed with uniform sampling.
+Sampled reference points shown in blue are reconstructed points with uniform sampling.
 
 The curve of the red line is the curve predicted, based on the estimated parameters.
 
-The two curves are very similar over the parameter range that was sampled, consistent with a low uniform-grid L1 loss.
+They are both similar curves over the sampled range of the parameter, suggesting a rather low uniform-grid L1 loss.
 
 ---
 
@@ -626,7 +626,7 @@ The methodology is supported by prior work in curve parameterization, interpolat
 - **Storn & Price (1997)** — *Differential Evolution – A Simple and Efficient Heuristic for Global Optimization over Continuous Spaces.*  
   [View paper](https://link.springer.com/article/10.1023/A%3A1008202821328)
 
-These works are relevant to the missing-$t$ parameterization, PCHIP reconstruction, and Differential Evolution stages of the solution.
+These works are relevant to the missing- $t$ parameterization, PCHIP reconstruction, and Differential Evolution stages of the solution.
 
 ## Conclusion
 
